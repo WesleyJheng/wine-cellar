@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>品飲酒窖 · 紅酒心得與個人風味探索</title>
+  
+  <!-- Mobile & PWA meta tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="品飲酒窖">
+  <meta name="theme-color" content="#722F37">
+  <link rel="apple-touch-icon" href="https://api.iconify.design/lucide:wine.svg?color=%23722F37">
+
+  <!-- Preconnect to CDNs & Supabase -->
+  <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://hozanozxyuvpbwhrvxck.supabase.co" crossorigin>
+  <link rel="dns-prefetch" href="https://hozanozxyuvpbwhrvxck.supabase.co">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            wine: {
+              50: '#FDF7F7',
+              100: '#FBEBEB',
+              200: '#F6D2D4',
+              300: '#EFAEB2',
+              400: '#E16F77',
+              700: '#9B3B48',
+              800: '#722F37',
+              900: '#531B23',
+              950: '#350F14'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js for Radar & Analytics Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css?v=2.4">
+</head>
+<body class="bg-[#FDFBF7] text-gray-800 min-h-screen flex flex-col antialiased selection:bg-red-800 selection:text-white">
+
+  <!-- Top Sticky Header -->
+  <header id="top-navbar" class="sticky top-0 z-40 glass-nav border-b border-gray-200/60 safe-top"></header>
+
+  <!-- Main Scrollable Content Area -->
+  <main id="main-content" class="flex-1 max-w-xl w-full mx-auto px-4 pt-3.5"></main>
+
+  <!-- Bottom Floating / Fixed Navigation Bar for Mobile -->
+  <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 z-40 glass-nav border-t border-gray-200/80 safe-bottom shadow-lg shadow-black/5"></nav>
+
+  <!-- Data bootstrap & Main scripts -->
+  <script src="wines_data.js?v=2.4"></script>
+  <script src="app.js?v=2.4"></script>
+</body>
+</html>
