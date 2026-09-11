@@ -197,6 +197,57 @@ function normalizeWine(w) {
   };
 }
 
+// Calculate a reliable timestamp for sorting wines chronologically
+function getWineTimestamp(w) {
+  if (!w) return 0;
+
+  // 1. Try parsing createdAt or date (supports "2026年9月10日", Notion format "September 1, 2025 10:05 PM", ISO)
+  const dateStr = w.createdAt || w.date;
+  if (dateStr && typeof dateStr === 'string') {
+    const zhMatch = dateStr.match(/(\d{4})[年/-](\d{1,2})[月/-](\d{1,2})/);
+    if (zhMatch) {
+      const ts = new Date(parseInt(zhMatch[1], 10), parseInt(zhMatch[2], 10) - 1, parseInt(zhMatch[3], 10)).getTime();
+      if (!isNaN(ts) && ts > 0) return ts;
+    }
+
+    const parsed = Date.parse(dateStr);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+
+  // 2. If ID contains timestamp (e.g. wine_1789114855413)
+  const idStr = String(w.id || '');
+  const tsMatch = idStr.match(/wine_(\d{10,13})/);
+  if (tsMatch) {
+    const ts = parseInt(tsMatch[1], 10);
+    if (!isNaN(ts) && ts > 1000000000000) return ts;
+  }
+
+  // 3. Sequential numeric ID fallback (e.g. wine_1 to wine_51)
+  const seqMatch = idStr.match(/wine_(\d+)/);
+  if (seqMatch) {
+    const num = parseInt(seqMatch[1], 10);
+    if (!isNaN(num)) {
+      return 1756700000000 + num * 1000;
+    }
+  }
+
+  return 0;
+}
+
+// Format date into clean short date string (e.g. 2025/09/01)
+function formatShortDate(str) {
+  if (!str) return '';
+  const ts = getWineTimestamp({ createdAt: str });
+  if (ts && ts > 0) {
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}/${m}/${day}`;
+  }
+  return String(str).slice(0, 10);
+}
+
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
   loadInitialData();
@@ -320,7 +371,7 @@ function renderNavbar() {
         <div>
           <div class="flex items-center space-x-1.5">
             <h1 class="text-lg font-bold tracking-tight text-gray-900 leading-tight">品飲酒窖</h1>
-            <span class="text-[10px] font-mono font-bold bg-amber-100 text-red-900 px-1.5 py-0.2 rounded border border-amber-300">v2.4 零延遲</span>
+            <span class="text-[10px] font-mono font-bold bg-amber-100 text-red-900 px-1.5 py-0.2 rounded border border-amber-300">v2.5 零延遲</span>
           </div>
           <p class="text-[11px] font-medium text-gray-500">已記錄 ${totalCount} 款 · ${likedCount} 款心頭好</p>
         </div>
@@ -417,7 +468,9 @@ function renderCellarView() {
   // Sort
   filtered.sort((a, b) => {
     if (state.selectedSort === 'newest') {
-      return (b.id || '').localeCompare(a.id || '');
+      return getWineTimestamp(b) - getWineTimestamp(a);
+    } else if (state.selectedSort === 'oldest') {
+      return getWineTimestamp(a) - getWineTimestamp(b);
     } else if (state.selectedSort === 'rating') {
       return (Number(b.rating) || 0) - (Number(a.rating) || 0);
     } else if (state.selectedSort === 'price_asc') {
@@ -484,7 +537,8 @@ function renderCellarView() {
           </div>
 
           <select id="cellar-sort" onchange="setSort(this.value)" class="text-[11px] bg-transparent text-gray-500 font-medium focus:outline-none cursor-pointer pl-1">
-            <option value="newest" ${state.selectedSort === 'newest' ? 'selected' : ''}>最新紀錄</option>
+            <option value="newest" ${state.selectedSort === 'newest' ? 'selected' : ''}>最新紀錄 (新至舊)</option>
+            <option value="oldest" ${state.selectedSort === 'oldest' ? 'selected' : ''}>最早紀錄 (舊至新)</option>
             <option value="rating" ${state.selectedSort === 'rating' ? 'selected' : ''}>評分最高</option>
             <option value="price_asc" ${state.selectedSort === 'price_asc' ? 'selected' : ''}>價格 (低至高)</option>
             <option value="price_desc" ${state.selectedSort === 'price_desc' ? 'selected' : ''}>價格 (高至低)</option>
@@ -640,9 +694,10 @@ function renderWineCard(wine) {
 
       <!-- Bottom meta info: Price, Store, Actions -->
       <div class="flex items-center justify-between pt-2 border-t border-gray-100 text-[11px] text-gray-500">
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 flex-wrap gap-y-1">
           ${wine.price ? `<span class="font-bold text-red-900 text-xs">NT$ ${wine.price}</span>` : (wine.priceRange ? `<span class="text-gray-600 font-medium">${wine.priceRange}</span>` : '')}
           ${wine.purchasePlace ? `<span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">🏪 ${escapeHtml(wine.purchasePlace)}</span>` : ''}
+          ${(wine.createdAt || wine.date) ? `<span class="text-gray-400 text-[10px]">📅 ${formatShortDate(wine.createdAt || wine.date)}</span>` : ''}
           ${wine.reviewer ? `<span class="text-gray-400 text-[10px]">👤 ${escapeHtml(wine.reviewer)}</span>` : ''}
         </div>
 
@@ -2259,7 +2314,9 @@ function updateCellarCardsListOnly() {
 
   filtered.sort((a, b) => {
     if (state.selectedSort === 'newest') {
-      return (b.id || '').localeCompare(a.id || '');
+      return getWineTimestamp(b) - getWineTimestamp(a);
+    } else if (state.selectedSort === 'oldest') {
+      return getWineTimestamp(a) - getWineTimestamp(b);
     } else if (state.selectedSort === 'rating') {
       return (Number(b.rating) || 0) - (Number(a.rating) || 0);
     } else if (state.selectedSort === 'price_asc') {
