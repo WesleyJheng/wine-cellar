@@ -42,6 +42,7 @@ let state = {
     sweetness: '乾型',
     grape: '',
     country: '',
+    customKeyword: '',
     selectedFlavors: []
   }
 };
@@ -95,23 +96,95 @@ const PRESET_FLAVORS = [
 ];
 
 const PRESET_STORES = ['好市多 (Costco)', '全聯', '家樂福', 'citySuper', '專賣酒商', '愛買', '大潤發', '餐廳', '朋友聚會'];
+
+const PRESET_COUNTRIES = [
+  '法國 (France)',
+  '義大利 (Italy)',
+  '西班牙 (Spain)',
+  '智利 (Chile)',
+  '美國 (USA)',
+  '澳洲 (Australia)',
+  '紐西蘭 (New Zealand)',
+  '阿根廷 (Argentina)',
+  '德國 (Germany)',
+  '葡萄牙 (Portugal)',
+  '南非 (South Africa)',
+  '匈牙利 (Hungary)',
+  '台灣 (Taiwan)',
+  '日本 (Japan)'
+];
+
 const PRESET_GRAPES = [
-  '黑皮諾（Pinot Noir）',
+  '希哈（Syrah）',
+  '桑嬌維塞（Sangiovese）',
   '卡本內蘇維濃（Cabernet Sauvignon）',
   '梅洛（Merlot）',
-  '希哈/希拉茲（Syrah/Shiraz）',
-  '馬爾貝克（Malbec）',
+  '黑皮諾（Pinot Noir）',
+  '希拉茲（Shiraz）',
   '田帕尼優（Tempranillo）',
-  '桑嬌維塞（Sangiovese）',
-  '格那希（Garnacha）',
-  '金芬黛（Zinfandel）',
+  '馬爾貝克（Malbec）',
   '內比奧羅（Nebbiolo）',
+  '格那希（Garnacha）',
+  '卡美內（Carmenere）',
+  '卡本內弗朗（Cabernet Franc）',
+  '金芬黛（Zinfandel）',
+  '巴貝拉（Barbera）',
+  '蒙特普爾恰諾（Montepulciano）',
   '夏多內（Chardonnay）',
   '白蘇維濃（Sauvignon Blanc）',
-  '麝香葡萄（Moscato）',
   '麗絲玲（Riesling）',
+  '麝香葡萄（Moscato）',
+  '格烏茲塔明那（Gewürztraminer）',
+  '佳美（Gamay）',
+  '格雷拉（Glera）',
   '混釀（Blend）'
 ];
+
+// Helper to standardize grape names into full "中文（English）" format
+function getStandardGrapeName(rawGrape) {
+  if (!rawGrape) return '';
+  const raw = String(rawGrape).trim();
+  if (/[（(].+[)）]/.test(raw)) return raw;
+  const found = PRESET_GRAPES.find(p => p.startsWith(raw + '（') || p.startsWith(raw + '(') || p.toLowerCase().includes(raw.toLowerCase()));
+  if (found) return found;
+  return raw;
+}
+
+// Helper to match grape variety across different formats
+function matchGrapeName(wineGrapes, targetGrape) {
+  if (!targetGrape) return false;
+  const targetLower = targetGrape.toLowerCase();
+  const zhMatch = targetGrape.match(/^([^(（]+)/);
+  const enMatch = targetGrape.match(/[（(]([^)）]+)[)）]/);
+  const zhName = zhMatch ? zhMatch[1].trim().toLowerCase() : '';
+  const enName = enMatch ? enMatch[1].trim().toLowerCase() : '';
+
+  const list = Array.isArray(wineGrapes) ? wineGrapes : [wineGrapes];
+  return list.some(g => {
+    if (!g) return false;
+    const gStr = String(g).toLowerCase();
+    if (gStr === targetLower) return true;
+    if (zhName && gStr.includes(zhName)) return true;
+    if (enName && gStr.includes(enName)) return true;
+    return false;
+  });
+}
+
+// Helper to match country across formats
+function matchCountryName(wineCountry, targetCountry) {
+  if (!targetCountry) return false;
+  const targetLower = targetCountry.toLowerCase();
+  const zhMatch = targetCountry.match(/^([^(（]+)/);
+  const enMatch = targetCountry.match(/[（(]([^)）]+)[)）]/);
+  const zhName = zhMatch ? zhMatch[1].trim().toLowerCase() : '';
+  const enName = enMatch ? enMatch[1].trim().toLowerCase() : '';
+
+  const cStr = String(wineCountry || '').toLowerCase();
+  if (cStr === targetLower) return true;
+  if (zhName && cStr.includes(zhName)) return true;
+  if (enName && cStr.includes(enName)) return true;
+  return false;
+}
 
 // Lightweight inline SVG icons (Zero DOM mutation, 60 FPS instantaneous render)
 const ICONS = {
@@ -193,16 +266,17 @@ function normalizeWine(w) {
     remark: w.remark || '',
     reviewer: w.reviewer || '品酒愛好者',
     date: w.date || '',
-    createdAt: w.createdAt || w.createdat || ''
+    createdAt: w.createdAt || w.createdat || '',
+    changedAt: w.changedAt || w.changedat || w.updatedAt || w.updatedat || w.createdAt || w.createdat || ''
   };
 }
 
-// Calculate a reliable timestamp for sorting wines chronologically
+// Calculate a reliable timestamp for sorting wines chronologically (prioritizes changedAt)
 function getWineTimestamp(w) {
   if (!w) return 0;
 
-  // 1. Try parsing createdAt or date (supports "2026年9月10日", Notion format "September 1, 2025 10:05 PM", ISO)
-  const dateStr = w.createdAt || w.date;
+  // 1. Prioritize changedAt (change datetime) over createdAt
+  const dateStr = w.changedAt || w.changedat || w.updatedAt || w.updatedat || w.createdAt || w.createdat || w.date;
   if (dateStr && typeof dateStr === 'string') {
     const zhMatch = dateStr.match(/(\d{4})[年/-](\d{1,2})[月/-](\d{1,2})/);
     if (zhMatch) {
@@ -246,6 +320,26 @@ function formatShortDate(str) {
     return `${y}/${m}/${day}`;
   }
   return String(str).slice(0, 10);
+}
+
+// Format date into YYYY-MM-DD for HTML5 date input
+function getFormDateValue(str) {
+  if (!str) {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+  const ts = getWineTimestamp({ createdAt: str });
+  if (ts && ts > 0) {
+    const d = new Date(ts);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+  return '';
 }
 
 // Initialize application
@@ -332,6 +426,7 @@ function renderApp() {
       container.innerHTML = renderAnalyticsView();
       renderAnalyticsCharts();
       attachMatcherEvents();
+      if (window.lucide) lucide.createIcons();
     } else if (state.activeTab === 'sync') {
       container.innerHTML = renderSyncView();
       attachSyncEvents();
@@ -371,7 +466,7 @@ function renderNavbar() {
         <div>
           <div class="flex items-center space-x-1.5">
             <h1 class="text-lg font-bold tracking-tight text-gray-900 leading-tight">品飲酒窖</h1>
-            <span class="text-[10px] font-mono font-bold bg-amber-100 text-red-900 px-1.5 py-0.2 rounded border border-amber-300">v2.5 零延遲</span>
+            <span class="text-[10px] font-mono font-bold bg-amber-100 text-red-900 px-1.5 py-0.2 rounded border border-amber-300">v2.6 支援自訂日期</span>
           </div>
           <p class="text-[11px] font-medium text-gray-500">已記錄 ${totalCount} 款 · ${likedCount} 款心頭好</p>
         </div>
@@ -395,7 +490,7 @@ function renderBottomNav() {
   const tabs = [
     { id: 'cellar', label: '酒窖總覽', iconSvg: ICONS.wine('w-5 h-5') },
     { id: 'add', label: '記筆記', iconSvg: ICONS.plusCircle('w-5 h-5') },
-    { id: 'analytics', label: '喜好分析', iconSvg: ICONS.sparkles('w-5 h-5') },
+    { id: 'analytics', label: '選酒分析', iconSvg: ICONS.sparkles('w-5 h-5') },
     { id: 'sync', label: '共享備份', iconSvg: ICONS.users('w-5 h-5') }
   ];
 
@@ -537,7 +632,7 @@ function renderCellarView() {
           </div>
 
           <select id="cellar-sort" onchange="setSort(this.value)" class="text-[11px] bg-transparent text-gray-500 font-medium focus:outline-none cursor-pointer pl-1">
-            <option value="newest" ${state.selectedSort === 'newest' ? 'selected' : ''}>最新紀錄 (新至舊)</option>
+            <option value="newest" ${state.selectedSort === 'newest' ? 'selected' : ''}>最新紀錄 (依更新時間)</option>
             <option value="oldest" ${state.selectedSort === 'oldest' ? 'selected' : ''}>最早紀錄 (舊至新)</option>
             <option value="rating" ${state.selectedSort === 'rating' ? 'selected' : ''}>評分最高</option>
             <option value="price_asc" ${state.selectedSort === 'price_asc' ? 'selected' : ''}>價格 (低至高)</option>
@@ -697,7 +792,14 @@ function renderWineCard(wine) {
         <div class="flex items-center space-x-2 flex-wrap gap-y-1">
           ${wine.price ? `<span class="font-bold text-red-900 text-xs">NT$ ${wine.price}</span>` : (wine.priceRange ? `<span class="text-gray-600 font-medium">${wine.priceRange}</span>` : '')}
           ${wine.purchasePlace ? `<span class="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded text-[10px]">🏪 ${escapeHtml(wine.purchasePlace)}</span>` : ''}
-          ${(wine.createdAt || wine.date) ? `<span class="text-gray-400 text-[10px]">📅 ${formatShortDate(wine.createdAt || wine.date)}</span>` : ''}
+          ${(() => {
+            const displayDate = wine.changedAt || wine.createdAt || wine.date;
+            if (!displayDate) return '';
+            const isChanged = wine.changedAt && wine.createdAt && (wine.changedAt !== wine.createdAt);
+            return isChanged 
+              ? `<span class="text-amber-700 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded text-[10px] font-medium" title="建立於 ${escapeHtml(wine.createdAt || '')}，最後修改於 ${escapeHtml(wine.changedAt || '')}">🔄 修改: ${formatShortDate(wine.changedAt)}</span>`
+              : `<span class="text-gray-400 text-[10px]" title="建立時間: ${escapeHtml(wine.createdAt || '')}">📅 ${formatShortDate(displayDate)}</span>`;
+          })()}
           ${wine.reviewer ? `<span class="text-gray-400 text-[10px]">👤 ${escapeHtml(wine.reviewer)}</span>` : ''}
         </div>
 
@@ -930,8 +1032,15 @@ function renderAddOrEditView() {
               id="form-country" 
               placeholder="例如：法國、義大利" 
               value="${escapeHtml(wine.country || '')}"
-              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-800/20 focus:border-red-800"
+              class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-800/20 focus:border-red-800 mb-1.5"
             />
+            <div class="flex flex-wrap gap-1">
+              ${['法國', '義大利', '西班牙', '智利', '美國', '澳洲'].map(c => `
+                <button type="button" onclick="document.getElementById('form-country').value='${c}'" class="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-[10px]">
+                  ${c}
+                </button>
+              `).join('')}
+            </div>
           </div>
           <div>
             <label class="block text-xs font-bold text-gray-700 mb-1">產區</label>
@@ -947,18 +1056,18 @@ function renderAddOrEditView() {
 
         <!-- Grape Varieties -->
         <div>
-          <label class="block text-xs font-bold text-gray-700 mb-1">葡萄品種 (可輸入或點選加入)</label>
+          <label class="block text-xs font-bold text-gray-700 mb-1">葡萄品種 (可輸入或點選加入中英文名稱)</label>
           <input 
             type="text" 
             id="form-grapes" 
-            placeholder="例如：黑皮諾, 卡本內蘇維濃" 
+            placeholder="例如：希哈（Syrah）, 桑嬌維塞（Sangiovese）" 
             value="${escapeHtml(Array.isArray(wine.grapes) ? wine.grapes.join(', ') : (wine.grapes || ''))}"
             class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-800/20 focus:border-red-800 mb-2"
           />
           <div class="flex flex-wrap gap-1.5">
-            ${PRESET_GRAPES.slice(0, 8).map(g => `
-              <button type="button" onclick="appendGrape('${g}')" class="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded text-[10px]">
-                + ${g.split('（')[0]}
+            ${PRESET_GRAPES.slice(0, 10).map(g => `
+              <button type="button" onclick="appendGrape('${g}')" class="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded text-[10px] transition">
+                + ${g}
               </button>
             `).join('')}
           </div>
@@ -1103,6 +1212,23 @@ function renderAddOrEditView() {
               class="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-800/20 focus:border-red-800"
             />
           </div>
+        </div>
+
+        <!-- 8. DATE / DATETIME (品飲記錄日期，可補登與修改) -->
+        <div class="bg-amber-50/40 border border-amber-200/60 rounded-xl p-3">
+          <label class="block text-xs font-bold text-gray-800 mb-1 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-700"></i>
+              <span>品飲日期 / 記錄時間 (可修改歷史時間)</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-normal">直接影響「最新紀錄」排序</span>
+          </label>
+          <input 
+            type="date" 
+            id="form-date" 
+            value="${getFormDateValue(wine.createdAt || wine.date)}"
+            class="w-full px-3.5 py-2 text-sm bg-white border border-amber-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-600 text-gray-800 font-medium"
+          />
         </div>
 
         <!-- Submit Button -->
@@ -1339,73 +1465,185 @@ function renderAnalyticsView() {
         </p>
       </div>
 
-      <!-- Top Grape Varieties & Regions -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
-        <h3 class="text-xs font-bold text-gray-900 flex items-center space-x-1.5">
-          ${ICONS.award('w-3.5 h-3.5 text-amber-600')}
-          <span>最愛葡萄品種與勝率榜</span>
-        </h3>
+      <!-- Rankings: Top Grapes (Bilingual) & Top Countries -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <!-- Top Grapes -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2.5">
+          <h3 class="text-xs font-bold text-gray-900 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              ${ICONS.award('w-3.5 h-3.5 text-amber-600')}
+              <span>最愛葡萄品種 (中英文)</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-normal">依歷史勝率</span>
+          </h3>
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            ${analysis.grapeStats.slice(0, 6).map((g, idx) => `
+              <div>
+                <div class="flex items-center justify-between text-xs mb-0.5">
+                  <span class="font-semibold text-gray-800 truncate max-w-[170px]" title="${escapeHtml(g.name)}">${idx + 1}. ${g.name}</span>
+                  <span class="text-[11px] font-mono text-emerald-700 font-bold shrink-0">${g.winRate}% (${g.liked}/${g.total})</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-red-800 to-emerald-600 rounded-full" style="width: ${g.winRate}%"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
 
-        <div class="space-y-2">
-          ${analysis.grapeStats.slice(0, 5).map((g, idx) => `
-            <div>
-              <div class="flex items-center justify-between text-xs mb-1">
-                <span class="font-semibold text-gray-800">${idx + 1}. ${g.name}</span>
-                <span class="text-[11px] font-mono text-emerald-700 font-bold">${g.winRate}% 回購 (${g.liked}/${g.total})</span>
+        <!-- Top Countries -->
+        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-2.5">
+          <h3 class="text-xs font-bold text-gray-900 flex items-center justify-between">
+            <span class="flex items-center space-x-1.5">
+              <span>📍</span>
+              <span>最愛產地勝率榜</span>
+            </span>
+            <span class="text-[10px] text-gray-400 font-normal">依歷史勝率</span>
+          </h3>
+          <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            ${analysis.countryStats.slice(0, 6).map((c, idx) => `
+              <div>
+                <div class="flex items-center justify-between text-xs mb-0.5">
+                  <span class="font-semibold text-gray-800 truncate max-w-[170px]" title="${escapeHtml(c.name)}">${idx + 1}. ${c.name}</span>
+                  <span class="text-[11px] font-mono text-emerald-700 font-bold shrink-0">${c.winRate}% (${c.liked}/${c.total})</span>
+                </div>
+                <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div class="h-full bg-gradient-to-r from-red-800 to-emerald-600 rounded-full" style="width: ${c.winRate}%"></div>
+                </div>
               </div>
-              <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-red-800 to-emerald-600 rounded-full" style="width: ${g.winRate}%"></div>
-              </div>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
       </div>
 
-      <!-- Realtime Wine Matcher Tool (站在酒架前的選酒小幫手) -->
-      <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-100 ring-1 ring-red-800/10 space-y-3">
-        <div class="flex items-center space-x-2">
-          <div class="w-7 h-7 rounded-lg bg-red-800 flex items-center justify-center text-white text-xs font-bold">
-            🎯
+      <!-- Realtime Wine Matcher Tool (現場選酒分析小幫手) -->
+      <div class="bg-white rounded-2xl p-4 shadow-sm border border-red-100 ring-1 ring-red-800/10 space-y-3.5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-red-800 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+              🎯
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-gray-900">現場選酒分析小幫手 (Wine Matcher)</h3>
+              <p class="text-[11px] text-gray-500">站在酒架前快速點選產地與品種，智慧預測契合度</p>
+            </div>
           </div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-900">賣場現場選酒評估器 (Wine Matcher)</h3>
-            <p class="text-[11px] text-gray-500">站在酒架前勾選特徵，預測契合度</p>
-          </div>
+          <button type="button" onclick="resetMatcher()" class="text-[11px] text-gray-400 hover:text-red-800 underline transition">
+            重設條件
+          </button>
         </div>
 
-        <div class="space-y-2.5 pt-1">
+        <div class="space-y-3 pt-1">
+          <!-- 1. Origin / Country Selector -->
           <div>
-            <label class="block text-[11px] font-semibold text-gray-600 mb-1">輸入葡萄品種或產區</label>
+            <label class="block text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+              <span>📍 產地選擇 (Country / Region)</span>
+              <span class="text-[10px] text-gray-400 font-normal">可直接下拉或點選快選標籤</span>
+            </label>
+            <select 
+              id="matcher-country-select" 
+              onchange="setMatcherCountry(this.value)"
+              class="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-red-800 mb-1.5 font-medium text-gray-800"
+            >
+              <option value="">-- 全部產地 (不限) --</option>
+              ${PRESET_COUNTRIES.map(c => `
+                <option value="${c}" ${state.matcherInput.country === c ? 'selected' : ''}>${c}</option>
+              `).join('')}
+            </select>
+            <!-- Country quick pills -->
+            <div class="flex flex-wrap gap-1">
+              ${['義大利 (Italy)', '法國 (France)', '西班牙 (Spain)', '智利 (Chile)', '美國 (USA)', '澳洲 (Australia)', '紐西蘭 (New Zealand)'].map(c => {
+                const isSelected = state.matcherInput.country === c;
+                return `
+                  <button 
+                    type="button" 
+                    onclick="setMatcherCountry('${c}')" 
+                    id="matcher-c-btn-${c.split(' ')[0]}"
+                    class="px-2 py-0.5 rounded text-[10px] font-medium border transition ${isSelected ? 'bg-red-800 text-white border-red-800 shadow-sm' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200'}"
+                  >
+                    ${c.split(' ')[0]}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- 2. Grape Variety Selector (with Chinese & English) -->
+          <div>
+            <label class="block text-[11px] font-bold text-gray-700 mb-1 flex items-center justify-between">
+              <span>🍇 葡萄品種 (中英文對照)</span>
+              <span class="text-[10px] text-gray-400 font-normal">含中英文標準名稱</span>
+            </label>
+            <select 
+              id="matcher-grape-select" 
+              onchange="setMatcherGrape(this.value)"
+              class="w-full px-3 py-2 text-xs bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:border-red-800 mb-1.5 font-medium text-gray-800"
+            >
+              <option value="">-- 全部葡萄品種 (不限) --</option>
+              ${PRESET_GRAPES.map(g => `
+                <option value="${g}" ${state.matcherInput.grape === g ? 'selected' : ''}>${g}</option>
+              `).join('')}
+            </select>
+            <!-- Grape quick pills with Chinese and English -->
+            <div class="flex flex-wrap gap-1 max-h-24 overflow-y-auto p-1 bg-gray-50/50 rounded-lg border border-gray-100">
+              ${PRESET_GRAPES.slice(0, 10).map(g => {
+                const isSelected = state.matcherInput.grape === g;
+                return `
+                  <button 
+                    type="button" 
+                    onclick="setMatcherGrape('${g}')" 
+                    class="px-2 py-0.5 rounded text-[10px] font-medium border transition ${isSelected ? 'bg-red-800 text-white border-red-800 shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200'}"
+                  >
+                    ${g}
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+
+          <!-- 3. Optional Sub-region or Keyword -->
+          <div>
+            <label class="block text-[11px] font-semibold text-gray-600 mb-1">補充關鍵字或子產區 (選填)</label>
             <input 
               type="text" 
-              id="matcher-grape" 
-              oninput="runMatcherEvaluation()"
-              placeholder="例如：黑皮諾、波爾多、馬爾貝克" 
-              class="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-800"
+              id="matcher-keyword" 
+              oninput="handleMatcherKeywordChange(this.value)"
+              placeholder="例如：波爾多、納帕谷、里奧哈、巴羅洛..." 
+              value="${escapeHtml(state.matcherInput.customKeyword || '')}"
+              class="w-full px-3 py-1.5 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-red-800 text-gray-700"
             />
           </div>
 
+          <!-- 4. Flavors / Style Tags -->
           <div>
-            <label class="block text-[11px] font-semibold text-gray-600 mb-1">勾選該酒特色標籤 (可複選)</label>
-            <div class="flex flex-wrap gap-1 max-h-32 overflow-y-auto p-1 border border-gray-100 rounded-lg bg-gray-50/50">
-              ${PRESET_FLAVORS.map(f => `
-                <button 
-                  type="button" 
-                  onclick="toggleMatcherFlavor('${f.tag}')"
-                  id="matcher-tag-${f.tag}"
-                  class="px-2 py-1 rounded text-[10px] font-medium border bg-white border-gray-200 text-gray-700 transition"
-                >
-                  ${f.icon} ${f.tag}
-                </button>
-              `).join('')}
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-[11px] font-semibold text-gray-600">勾選該酒特色風味 (可複選)</label>
+              <span class="text-[10px] text-gray-400">已選 <span id="matcher-flavor-count" class="font-bold text-red-800">${state.matcherInput.selectedFlavors.length}</span> 項</span>
+            </div>
+            <div class="flex flex-wrap gap-1 max-h-28 overflow-y-auto p-1 border border-gray-100 rounded-lg bg-gray-50/50">
+              ${PRESET_FLAVORS.map(f => {
+                const isSel = state.matcherInput.selectedFlavors.includes(f.tag);
+                return `
+                  <button 
+                    type="button" 
+                    onclick="toggleMatcherFlavor('${f.tag}')" 
+                    id="matcher-tag-${f.tag}" 
+                    class="px-2 py-1 rounded text-[10px] font-medium border transition ${isSel ? 'bg-red-800 text-white border-red-800 shadow-sm' : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-100'}"
+                  >
+                    ${f.icon} ${f.tag}
+                  </button>
+                `;
+              }).join('')}
             </div>
           </div>
 
           <!-- Evaluation Output Box -->
-          <div id="matcher-result-box" class="bg-gray-50 rounded-xl p-3 border border-gray-200 mt-2 text-center">
-            <div class="text-2xl font-black text-red-900" id="matcher-score">-- %</div>
-            <div class="text-xs font-bold text-gray-700 mt-0.5" id="matcher-verdict">請輸入特徵進行契合度運算</div>
-            <div class="text-[11px] text-gray-500 mt-1 leading-normal" id="matcher-reason"></div>
+          <div id="matcher-result-box" class="bg-gray-50 rounded-xl p-3.5 border border-gray-200 mt-2 text-center space-y-2">
+            <div class="text-3xl font-black text-red-900" id="matcher-score">-- %</div>
+            <div class="text-xs font-bold text-gray-700" id="matcher-verdict">請點選產地或品種進行選酒分析</div>
+            <div class="text-[11px] text-gray-600 leading-relaxed text-left space-y-1" id="matcher-reason"></div>
+            <!-- Matching Past Cellar Wines -->
+            <div id="matcher-matching-wines" class="text-left pt-2.5 border-t border-gray-200/80 space-y-1.5 hidden"></div>
           </div>
         </div>
       </div>
@@ -1573,13 +1811,14 @@ function calculatePreferenceInsights() {
     .filter(f => f.rejectedCount > 0)
     .sort((a, b) => b.rejectedCount - a.rejectedCount);
 
-  // Grape varieties stats
+  // Grape varieties stats (with standard Chinese + English names)
   const grapeMap = {};
   state.wines.forEach(w => {
     const isLiked = w.repurchase === '可回購' || w.repurchase === '必回購';
     ensureArray(w.grapes).forEach(g => {
-      const name = String(g || '').split('（')[0].trim();
-      if (!name) return;
+      const raw = String(g || '').trim();
+      if (!raw) return;
+      const name = getStandardGrapeName(raw);
       if (!grapeMap[name]) {
         grapeMap[name] = { name, liked: 0, total: 0 };
       }
@@ -1593,6 +1832,29 @@ function calculatePreferenceInsights() {
     .map(g => ({
       ...g,
       winRate: Math.round((g.liked / g.total) * 100)
+    }))
+    .sort((a, b) => (b.winRate - a.winRate) || (b.total - a.total));
+
+  // Country / Origin stats
+  const countryMap = {};
+  state.wines.forEach(w => {
+    const isLiked = w.repurchase === '可回購' || w.repurchase === '必回購';
+    const rawCountry = String(w.country || '').trim();
+    if (!rawCountry) return;
+    const found = PRESET_COUNTRIES.find(pc => pc.startsWith(rawCountry));
+    const name = found || rawCountry;
+    if (!countryMap[name]) {
+      countryMap[name] = { name, liked: 0, total: 0 };
+    }
+    countryMap[name].total++;
+    if (isLiked) countryMap[name].liked++;
+  });
+
+  const countryStats = Object.values(countryMap)
+    .filter(c => c.total >= 1)
+    .map(c => ({
+      ...c,
+      winRate: Math.round((c.liked / c.total) * 100)
     }))
     .sort((a, b) => (b.winRate - a.winRate) || (b.total - a.total));
 
@@ -1615,6 +1877,7 @@ function calculatePreferenceInsights() {
     topFlavors,
     avoidFlavors,
     grapeStats,
+    countryStats,
     dominantBody,
     dominantTannin
   };
@@ -1708,7 +1971,49 @@ function renderAnalyticsCharts() {
   });
 }
 
-// Real-time Wine Matcher Evaluation Engine
+// Real-time Wine Matcher Interactive Handlers & Engine
+function setMatcherCountry(country) {
+  state.matcherInput.country = (state.matcherInput.country === country ? '' : country);
+  const sel = document.getElementById('matcher-country-select');
+  if (sel) sel.value = state.matcherInput.country;
+
+  // Update quick pills UI
+  ['義大利 (Italy)', '法國 (France)', '西班牙 (Spain)', '智利 (Chile)', '美國 (USA)', '澳洲 (Australia)', '紐西蘭 (New Zealand)'].forEach(c => {
+    const key = c.split(' ')[0];
+    const btn = document.getElementById(`matcher-c-btn-${key}`);
+    if (btn) {
+      const isSel = state.matcherInput.country === c;
+      btn.className = `px-2 py-0.5 rounded text-[10px] font-medium border transition ${isSel ? 'bg-red-800 text-white border-red-800 shadow-sm' : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200'}`;
+    }
+  });
+
+  runMatcherEvaluation();
+}
+
+function setMatcherGrape(grape) {
+  state.matcherInput.grape = (state.matcherInput.grape === grape ? '' : grape);
+  const sel = document.getElementById('matcher-grape-select');
+  if (sel) sel.value = state.matcherInput.grape;
+
+  // Update quick pills UI
+  const container = document.getElementById('matcher-grape-select')?.nextElementSibling;
+  if (container) {
+    const buttons = container.querySelectorAll('button');
+    buttons.forEach(btn => {
+      const txt = btn.innerText.trim();
+      const isSel = state.matcherInput.grape === txt;
+      btn.className = `px-2 py-0.5 rounded text-[10px] font-medium border transition ${isSel ? 'bg-red-800 text-white border-red-800 shadow-sm' : 'bg-white hover:bg-gray-100 text-gray-700 border-gray-200'}`;
+    });
+  }
+
+  runMatcherEvaluation();
+}
+
+function handleMatcherKeywordChange(kw) {
+  state.matcherInput.customKeyword = (kw || '').trim();
+  runMatcherEvaluation();
+}
+
 function toggleMatcherFlavor(tag) {
   const idx = state.matcherInput.selectedFlavors.indexOf(tag);
   const btn = document.getElementById(`matcher-tag-${tag}`);
@@ -1719,23 +2024,73 @@ function toggleMatcherFlavor(tag) {
     state.matcherInput.selectedFlavors.push(tag);
     if (btn) btn.className = 'px-2 py-1 rounded text-[10px] font-medium border bg-red-800 text-white border-red-800 transition shadow-sm';
   }
+
+  const countEl = document.getElementById('matcher-flavor-count');
+  if (countEl) countEl.innerText = state.matcherInput.selectedFlavors.length;
+
+  runMatcherEvaluation();
+}
+
+function resetMatcher() {
+  state.matcherInput.country = '';
+  state.matcherInput.grape = '';
+  state.matcherInput.customKeyword = '';
+  state.matcherInput.selectedFlavors = [];
+
+  const cSel = document.getElementById('matcher-country-select');
+  if (cSel) cSel.value = '';
+  const gSel = document.getElementById('matcher-grape-select');
+  if (gSel) gSel.value = '';
+  const kwInput = document.getElementById('matcher-keyword');
+  if (kwInput) kwInput.value = '';
+  const countEl = document.getElementById('matcher-flavor-count');
+  if (countEl) countEl.innerText = '0';
+
+  // Reset flavor tag buttons
+  PRESET_FLAVORS.forEach(f => {
+    const btn = document.getElementById(`matcher-tag-${f.tag}`);
+    if (btn) btn.className = 'px-2 py-1 rounded text-[10px] font-medium border bg-white border-gray-200 text-gray-700 transition';
+  });
+
+  // Reset country pills
+  ['義大利 (Italy)', '法國 (France)', '西班牙 (Spain)', '智利 (Chile)', '美國 (USA)', '澳洲 (Australia)', '紐西蘭 (New Zealand)'].forEach(c => {
+    const key = c.split(' ')[0];
+    const btn = document.getElementById(`matcher-c-btn-${key}`);
+    if (btn) btn.className = 'px-2 py-0.5 rounded text-[10px] font-medium border transition bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200';
+  });
+
+  // Reset grape pills
+  const gContainer = document.getElementById('matcher-grape-select')?.nextElementSibling;
+  if (gContainer) {
+    gContainer.querySelectorAll('button').forEach(btn => {
+      btn.className = 'px-2 py-0.5 rounded text-[10px] font-medium border transition bg-white hover:bg-gray-100 text-gray-700 border-gray-200';
+    });
+  }
+
   runMatcherEvaluation();
 }
 
 function runMatcherEvaluation() {
-  const grapeInput = (document.getElementById('matcher-grape')?.value || '').toLowerCase().trim();
+  const selectedCountry = state.matcherInput.country;
+  const selectedGrape = state.matcherInput.grape;
+  const customKeyword = state.matcherInput.customKeyword;
   const selectedFlavors = state.matcherInput.selectedFlavors;
 
   const scoreEl = document.getElementById('matcher-score');
   const verdictEl = document.getElementById('matcher-verdict');
   const reasonEl = document.getElementById('matcher-reason');
+  const matchingBoxEl = document.getElementById('matcher-matching-wines');
 
   if (!scoreEl || !verdictEl || !reasonEl) return;
 
-  if (!grapeInput && selectedFlavors.length === 0) {
+  const hasAnyInput = Boolean(selectedCountry || selectedGrape || customKeyword || selectedFlavors.length > 0);
+
+  if (!hasAnyInput) {
     scoreEl.innerText = '-- %';
-    verdictEl.innerText = '請輸入品種或勾選特徵進行評估';
-    reasonEl.innerText = '';
+    scoreEl.className = 'text-3xl font-black text-gray-400';
+    verdictEl.innerText = '請點選產地或品種進行選酒分析';
+    reasonEl.innerHTML = '<p class="text-gray-400 text-center">站在酒架前快速點選，即時預測契合度</p>';
+    if (matchingBoxEl) matchingBoxEl.classList.add('hidden');
     return;
   }
 
@@ -1743,53 +2098,165 @@ function runMatcherEvaluation() {
   let baseScore = 60;
   let pros = [];
   let cons = [];
+  let notes = [];
 
+  // 1. Evaluate Country
+  if (selectedCountry) {
+    const countryWines = state.wines.filter(w => matchCountryName(w.country, selectedCountry));
+    const total = countryWines.length;
+    if (total > 0) {
+      const liked = countryWines.filter(w => w.repurchase === '可回購' || w.repurchase === '必回購').length;
+      const rejected = countryWines.filter(w => w.repurchase === '不考慮').length;
+      const winRate = Math.round((liked / total) * 100);
+
+      if (winRate >= 60) {
+        baseScore += 18;
+        pros.push(`產地「${selectedCountry}」在您的酒窖勝率高達 ${winRate}% (${liked}/${total}款回購)`);
+      } else if (winRate >= 40) {
+        baseScore += 8;
+        pros.push(`產地「${selectedCountry}」歷史回購率 ${winRate}% (${liked}/${total}款)，表現平穩`);
+      } else {
+        baseScore -= 12;
+        cons.push(`注意：產地「${selectedCountry}」歷史回購率偏低 (${winRate}%，${rejected}款不考慮)`);
+      }
+    } else {
+      notes.push(`產地「${selectedCountry}」為新探索產區，值得親自嘗試建立新檔案`);
+    }
+  }
+
+  // 2. Evaluate Grape Variety (with Chinese & English)
+  if (selectedGrape) {
+    const grapeWines = state.wines.filter(w => matchGrapeName(w.grapes, selectedGrape));
+    const total = grapeWines.length;
+    if (total > 0) {
+      const liked = grapeWines.filter(w => w.repurchase === '可回購' || w.repurchase === '必回購').length;
+      const rejected = grapeWines.filter(w => w.repurchase === '不考慮').length;
+      const winRate = Math.round((liked / total) * 100);
+
+      if (winRate >= 65) {
+        baseScore += 22;
+        pros.push(`葡萄品種「${selectedGrape}」為高分命定品種！勝率 ${winRate}% (${liked}/${total}款回購)`);
+      } else if (winRate >= 40) {
+        baseScore += 10;
+        pros.push(`葡萄品種「${selectedGrape}」歷史勝率 ${winRate}% (${liked}/${total}款)，符合喜好`);
+      } else {
+        baseScore -= 18;
+        cons.push(`注意：葡萄品種「${selectedGrape}」在過去滿意度較低 (${winRate}%)`);
+      }
+    } else {
+      notes.push(`葡萄品種「${selectedGrape}」在酒窖中尚未有品飲紀錄，推薦開瓶探索！`);
+    }
+  }
+
+  // 3. Evaluate Custom Keyword (Sub-region or Appellation)
+  if (customKeyword) {
+    const kwLower = customKeyword.toLowerCase();
+    const matchedRegionWines = state.wines.filter(w => 
+      (w.region && w.region.toLowerCase().includes(kwLower)) ||
+      (w.name && w.name.toLowerCase().includes(kwLower))
+    );
+    if (matchedRegionWines.length > 0) {
+      const liked = matchedRegionWines.filter(w => w.repurchase === '可回購' || w.repurchase === '必回購').length;
+      if (liked > 0) {
+        baseScore += 8;
+        pros.push(`關鍵字「${customKeyword}」匹配到酒窖中 ${matchedRegionWines.length} 款紀錄，曾有好評`);
+      }
+    }
+  }
+
+  // 4. Evaluate Flavors
   selectedFlavors.forEach(f => {
     const isTop = analysis.topFlavors.some(t => t.tag === f);
     const isAvoid = analysis.avoidFlavors.some(a => a.tag === f);
 
     if (isTop) {
-      baseScore += 12;
-      pros.push(`命中您最愛風味 #${f}`);
+      baseScore += 10;
+      pros.push(`命中您最愛的個人風味關鍵字 #${f}`);
     } else if (isAvoid) {
-      baseScore -= 20;
-      cons.push(`注意：含有您曾排斥的特徵 #${f}`);
+      baseScore -= 18;
+      cons.push(`注意：含有您曾踩雷排斥的特徵 #${f}`);
     } else {
-      baseScore += 3;
+      baseScore += 2;
     }
   });
 
-  if (grapeInput) {
-    const matchedGrape = analysis.grapeStats.find(g => grapeInput.includes(g.name.toLowerCase()));
-    if (matchedGrape) {
-      if (matchedGrape.winRate >= 70) {
-        baseScore += 18;
-        pros.push(`葡萄品種「${matchedGrape.name}」在您的回購歷史中勝率高達 ${matchedGrape.winRate}%`);
-      } else if (matchedGrape.winRate < 40) {
-        baseScore -= 15;
-        cons.push(`「${matchedGrape.name}」在您過去的滿意度較低 (${matchedGrape.winRate}%)`);
-      }
-    }
-  }
-
-  const finalScore = Math.max(10, Math.min(98, baseScore));
+  const finalScore = Math.max(15, Math.min(98, baseScore));
   scoreEl.innerText = `${finalScore}%`;
 
   if (finalScore >= 80) {
-    scoreEl.className = 'text-2xl font-black text-emerald-600';
-    verdictEl.innerText = '高度契合！極推薦入手嘗試 🍷';
+    scoreEl.className = 'text-3xl font-black text-emerald-600';
+    verdictEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">🎉 極力推薦入手！與您的風味偏好高度契合 🍷</span>';
   } else if (finalScore >= 60) {
-    scoreEl.className = 'text-2xl font-black text-amber-600';
-    verdictEl.innerText = '口感符合日常風格，值得一試 👍';
+    scoreEl.className = 'text-3xl font-black text-amber-600';
+    verdictEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold">👍 表現穩定！符合日常品飲風格</span>';
   } else {
-    scoreEl.className = 'text-2xl font-black text-rose-600';
-    verdictEl.innerText = '可能偏離您的偏好或有避雷特徵 ⚠️';
+    scoreEl.className = 'text-3xl font-black text-rose-600';
+    verdictEl.innerHTML = '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 text-xs font-bold">⚠️ 風味可能偏離偏好或有避雷特徵，建議斟酌</span>';
   }
 
   reasonEl.innerHTML = `
-    ${pros.length > 0 ? `<p class="text-emerald-700">✨ ${pros.join('；')}</p>` : ''}
-    ${cons.length > 0 ? `<p class="text-rose-700 mt-0.5">⚠️ ${cons.join('；')}</p>` : ''}
+    ${pros.length > 0 ? `<div class="p-2 bg-emerald-50/80 rounded-lg border border-emerald-200/60 text-emerald-900 text-xs space-y-1">${pros.map(p => `<p class="flex items-start space-x-1.5"><span class="shrink-0 text-emerald-600 font-bold">✓</span><span>${escapeHtml(p)}</span></p>`).join('')}</div>` : ''}
+    ${cons.length > 0 ? `<div class="p-2 bg-rose-50/80 rounded-lg border border-rose-200/60 text-rose-900 text-xs space-y-1">${cons.map(c => `<p class="flex items-start space-x-1.5"><span class="shrink-0 text-rose-600 font-bold">✕</span><span>${escapeHtml(c)}</span></p>`).join('')}</div>` : ''}
+    ${notes.length > 0 ? `<div class="p-2 bg-sky-50/80 rounded-lg border border-sky-200/60 text-sky-900 text-xs space-y-1">${notes.map(n => `<p class="flex items-start space-x-1.5"><span class="shrink-0 text-sky-600">💡</span><span>${escapeHtml(n)}</span></p>`).join('')}</div>` : ''}
   `;
+
+  // 5. Look up matching wines from cellar
+  if (matchingBoxEl) {
+    const matchingWines = state.wines.filter(w => {
+      const matchC = selectedCountry ? matchCountryName(w.country, selectedCountry) : true;
+      const matchG = selectedGrape ? matchGrapeName(w.grapes, selectedGrape) : true;
+      if (selectedCountry && selectedGrape) return matchC && matchG;
+      if (selectedCountry) return matchC;
+      if (selectedGrape) return matchG;
+      return false;
+    });
+
+    if (matchingWines.length > 0) {
+      matchingBoxEl.classList.remove('hidden');
+      matchingBoxEl.innerHTML = `
+        <div class="flex items-center justify-between text-xs font-bold text-gray-800 mb-1">
+          <span class="flex items-center space-x-1">
+            <i data-lucide="bookmark" class="w-3.5 h-3.5 text-red-800"></i>
+            <span>酒窖歷史相似酒款對照 (${matchingWines.length} 款)</span>
+          </span>
+          <span class="text-[10px] text-gray-400 font-normal">提供現場購買參考</span>
+        </div>
+        <div class="space-y-1.5 max-h-44 overflow-y-auto">
+          ${matchingWines.slice(0, 3).map(w => {
+            const isLiked = w.repurchase === '可回購' || w.repurchase === '必回購';
+            const isRejected = w.repurchase === '不考慮';
+            const badgeClass = isLiked ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (isRejected ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-gray-100 text-gray-600 border-gray-200');
+            return `
+              <div class="p-2 bg-white rounded-xl border border-gray-200/80 text-xs space-y-1 shadow-2xs">
+                <div class="flex items-start justify-between gap-1">
+                  <div class="font-bold text-gray-900 truncate max-w-[240px]">${escapeHtml(w.name)}</div>
+                  <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold border ${badgeClass} shrink-0">${escapeHtml(w.repurchase || '未評級')}</span>
+                </div>
+                <div class="flex items-center space-x-2 text-[10px] text-gray-500">
+                  <span>📍 ${escapeHtml(w.country || '未標')}</span>
+                  <span>🍇 ${escapeHtml(ensureArray(w.grapes).join(' / ') || '未標')}</span>
+                  ${w.rating ? `<span class="text-amber-600 font-bold">★ ${w.rating}</span>` : ''}
+                </div>
+                ${w.notes ? `<p class="text-[11px] text-gray-600 italic bg-amber-50/40 px-1.5 py-0.5 rounded">"${escapeHtml(w.notes)}"</p>` : ''}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    } else {
+      if (selectedCountry || selectedGrape) {
+        matchingBoxEl.classList.remove('hidden');
+        matchingBoxEl.innerHTML = `
+          <p class="text-[11px] text-gray-400 text-center py-1">
+            酒窖中目前尚無「${escapeHtml(selectedCountry || '')} ${escapeHtml(selectedGrape || '')}」的歷史紀錄，適合入手開瓶評測！
+          </p>
+        `;
+      } else {
+        matchingBoxEl.classList.add('hidden');
+      }
+    }
+  }
 }
 
 // -------------------------------------------------------------
@@ -1866,6 +2333,14 @@ function handleWineSubmit(e) {
   const notes = document.getElementById('form-notes')?.value.trim() || '';
   const foodPairing = document.getElementById('form-pairing')?.value.trim() || '';
   const reviewer = document.getElementById('form-reviewer')?.value.trim() || state.currentUser;
+  const dateInputVal = document.getElementById('form-date')?.value || '';
+  let finalCreatedAt = '';
+  if (dateInputVal) {
+    const parts = dateInputVal.split('-');
+    if (parts.length === 3) {
+      finalCreatedAt = `${parts[0]}年${parseInt(parts[1], 10)}月${parseInt(parts[2], 10)}日`;
+    }
+  }
 
   // Save reviewer name
   if (reviewer) {
@@ -1876,13 +2351,15 @@ function handleWineSubmit(e) {
   const isEditing = Boolean(state.editingWineId);
   const editingId = state.editingWineId;
   let targetWine = null;
+  const nowIso = new Date().toISOString();
 
   if (isEditing) {
     // Update existing
     const idx = state.wines.findIndex(w => w.id === editingId);
     if (idx > -1) {
+      const origWine = state.wines[idx];
       state.wines[idx] = {
-        ...state.wines[idx],
+        ...origWine,
         name,
         type,
         vintage,
@@ -1896,17 +2373,21 @@ function handleWineSubmit(e) {
         reviewer,
         repurchase,
         rating: formSensory.rating,
-        image: formSensory.image || state.wines[idx].image || '',
+        image: formSensory.image || origWine.image || '',
         body: formSensory.body,
         tannin: formSensory.tannin,
         acidity: formSensory.acidity,
         sweetness: formSensory.sweetness,
-        flavors: [...formSensory.flavors]
+        flavors: [...formSensory.flavors],
+        date: dateInputVal || origWine.date || '',
+        createdAt: origWine.createdAt || finalCreatedAt || nowIso,
+        changedAt: nowIso
       };
       targetWine = state.wines[idx];
     }
   } else {
     // Create new
+    const createTime = finalCreatedAt || nowIso;
     const newWine = {
       id: `wine_${Date.now()}`,
       name,
@@ -1928,7 +2409,9 @@ function handleWineSubmit(e) {
       acidity: formSensory.acidity,
       sweetness: formSensory.sweetness,
       flavors: [...formSensory.flavors],
-      createdAt: new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })
+      date: dateInputVal || '',
+      createdAt: createTime,
+      changedAt: createTime
     };
     state.wines.unshift(newWine);
     targetWine = newWine;
@@ -2187,40 +2670,46 @@ async function pushToCloud(singleWine) {
   if (!state.cloudConfig.enabled || !state.cloudConfig.supabaseUrl) return;
   try {
     const list = singleWine ? [singleWine] : state.wines;
-    const payload = list.map(w => ({
-      id: w.id,
-      name: w.name,
-      type: w.type || '紅酒',
-      vintage: w.vintage || '',
-      price: w.price,
-      priceraw: w.priceRaw || '',
-      pricerange: w.priceRange || '',
-      country: w.country || '',
-      region: w.region || '',
-      grapes: Array.isArray(w.grapes) ? w.grapes : [],
-      flavors: Array.isArray(w.flavors) ? w.flavors : [],
-      rawtags: Array.isArray(w.rawTags) ? w.rawTags : [],
-      body: w.body || '中等',
-      tannin: w.tannin || '適中',
-      acidity: w.acidity || '中',
-      sweetness: w.sweetness || '乾型',
-      rating: Number(w.rating) || 4,
-      repurchase: w.repurchase || '可回購',
-      notes: w.notes || '',
-      image: w.image || '',
-      purchaseplace: w.purchasePlace || '',
-      source: w.source || '',
-      status: w.status || '已記錄',
-      foodpairing: w.foodPairing || '',
-      occasion: w.occasion || '',
-      decantminutes: w.decantMinutes || '',
-      remark: w.remark || '',
-      reviewer: w.reviewer || '品酒愛好者',
-      date: w.date || '',
-      createdat: w.createdAt || ''
-    }));
+    const createPayload = (includeChangedat) => list.map(w => {
+      const item = {
+        id: w.id,
+        name: w.name,
+        type: w.type || '紅酒',
+        vintage: w.vintage || '',
+        price: w.price,
+        priceraw: w.priceRaw || '',
+        pricerange: w.priceRange || '',
+        country: w.country || '',
+        region: w.region || '',
+        grapes: Array.isArray(w.grapes) ? w.grapes : [],
+        flavors: Array.isArray(w.flavors) ? w.flavors : [],
+        rawtags: Array.isArray(w.rawTags) ? w.rawTags : [],
+        body: w.body || '中等',
+        tannin: w.tannin || '適中',
+        acidity: w.acidity || '中',
+        sweetness: w.sweetness || '乾型',
+        rating: Number(w.rating) || 4,
+        repurchase: w.repurchase || '可回購',
+        notes: w.notes || '',
+        image: w.image || '',
+        purchaseplace: w.purchasePlace || '',
+        source: w.source || '',
+        status: w.status || '已記錄',
+        foodpairing: w.foodPairing || '',
+        occasion: w.occasion || '',
+        decantminutes: w.decantMinutes || '',
+        remark: w.remark || '',
+        reviewer: w.reviewer || '品酒愛好者',
+        date: w.date || '',
+        createdat: w.createdAt || ''
+      };
+      if (includeChangedat) {
+        item.changedat = w.changedAt || w.createdAt || '';
+      }
+      return item;
+    });
 
-    await fetch(`${state.cloudConfig.supabaseUrl}/rest/v1/wines`, {
+    let res = await fetch(`${state.cloudConfig.supabaseUrl}/rest/v1/wines`, {
       method: 'POST',
       headers: {
         'apikey': state.cloudConfig.supabaseKey,
@@ -2228,8 +2717,25 @@ async function pushToCloud(singleWine) {
         'Content-Type': 'application/json',
         'Prefer': 'resolution=merge-duplicates'
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(createPayload(true))
     });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      if (errText.includes('changedat')) {
+        console.warn('Supabase wines table missing changedat column, retrying without it...');
+        await fetch(`${state.cloudConfig.supabaseUrl}/rest/v1/wines`, {
+          method: 'POST',
+          headers: {
+            'apikey': state.cloudConfig.supabaseKey,
+            'Authorization': `Bearer ${state.cloudConfig.supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'resolution=merge-duplicates'
+          },
+          body: JSON.stringify(createPayload(false))
+        });
+      }
+    }
     console.log('Successfully pushed to Supabase cloud!');
   } catch (err) {
     console.warn('Cloud sync push warning:', err);

@@ -41,7 +41,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:05 PM"
     },
     {
         "id":  "wine_2",
@@ -56,9 +57,9 @@
         "priceRange":  "1000–2500",
         "country":  "法國",
         "region":  "勃艮第",
-        "grapes": [
-            "夏多內（Chardonnay）"
-        ],
+        "grapes":  [
+                       "夏多內（Chardonnay）"
+                   ],
         "sweetness":  "乾型",
         "acidity":  "",
         "tannin":  "",
@@ -84,7 +85,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:11 PM"
     },
     {
         "id":  "wine_3",
@@ -99,16 +101,16 @@
         "priceRange":  "1000–2500",
         "country":  "法國",
         "region":  "勃艮第",
-        "grapes": [
-            "黑皮諾（Pinot Noir）"
-        ],
+        "grapes":  [
+                       "黑皮諾（Pinot Noir）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "輕盈",
-        "flavors": [
-            "紅色水果"
-        ],
+        "flavors":  [
+                        "紅色水果"
+                    ],
         "rawTags":  [
                         "優雅",
                         "柔和單寧",
@@ -126,7 +128,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:12 PM"
     },
     {
         "id":  "wine_4",
@@ -141,9 +144,9 @@
         "priceRange":  "",
         "country":  "法國",
         "region":  "阿爾薩斯",
-        "grapes": [
-            "格烏茲塔明那（Gewürztraminer）"
-        ],
+        "grapes":  [
+                       "格烏茲塔明那（Gewürztraminer）"
+                   ],
         "sweetness":  "乾型",
         "acidity":  "",
         "tannin":  "",
@@ -169,7 +172,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:13 PM"
     },
     {
         "id":  "wine_5",
@@ -212,7 +216,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:13 PM"
     },
     {
         "id":  "wine_6",
@@ -227,9 +232,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "麝香葡萄（Moscato bianco）"
-        ],
+        "grapes":  [
+                       "麝香葡萄（Moscato bianco）"
+                   ],
         "sweetness":  "微甜",
         "acidity":  "",
         "tannin":  "",
@@ -255,7 +260,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:14 PM"
     },
     {
         "id":  "wine_7",
@@ -270,16 +276,16 @@
         "priceRange":  "1000以下",
         "country":  "紐西蘭",
         "region":  "",
-        "grapes": [
-            "黑皮諾（Pinot Noir）"
-        ],
+        "grapes":  [
+                       "黑皮諾（Pinot Noir）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "輕盈",
-        "flavors": [
-            "紅色水果"
-        ],
+        "flavors":  [
+                        "紅色水果"
+                    ],
         "rawTags":  [
                         "日常",
                         "柔和單寧",
@@ -298,7 +304,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:15 PM"
     },
     {
         "id":  "wine_8",
@@ -313,9 +320,9 @@
         "priceRange":  "1000–2500",
         "country":  "西班牙",
         "region":  "",
-        "grapes": [
-            "田帕尼優（Tempranillo）"
-        ],
+        "grapes":  [
+                       "田帕尼優（Tempranillo）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -342,7 +349,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:24 PM"
     },
     {
         "id":  "wine_9",
@@ -357,9 +365,9 @@
         "priceRange":  "1000以下",
         "country":  "西班牙",
         "region":  "",
-        "grapes": [
-            "田帕尼優（Tempranillo）"
-        ],
+        "grapes":  [
+                       "田帕尼優（Tempranillo）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -384,7 +392,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:25 PM"
     },
     {
         "id":  "wine_10",
@@ -399,9 +408,9 @@
         "priceRange":  "1000–2500",
         "country":  "葡萄牙",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -427,7 +436,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:30 PM"
     },
     {
         "id":  "wine_11",
@@ -442,9 +452,9 @@
         "priceRange":  "1000–2500",
         "country":  "葡萄牙",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -469,7 +479,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:30 PM"
     },
     {
         "id":  "wine_12",
@@ -514,7 +525,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:30 PM"
     },
     {
         "id":  "wine_13",
@@ -529,9 +541,9 @@
         "priceRange":  "1000–2500",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "內比奧羅（Nebbiolo）"
-        ],
+        "grapes":  [
+                       "內比奧羅（Nebbiolo）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -557,7 +569,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:31 PM"
     },
     {
         "id":  "wine_14",
@@ -601,7 +614,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:31 PM"
     },
     {
         "id":  "wine_15",
@@ -616,9 +630,9 @@
         "priceRange":  "1000–2500",
         "country":  "德國",
         "region":  "",
-        "grapes": [
-            "希爾瓦納（Silvaner）。"
-        ],
+        "grapes":  [
+                       "希爾瓦納（Silvaner）。"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -643,7 +657,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:31 PM"
     },
     {
         "id":  "wine_16",
@@ -688,7 +703,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:31 PM"
     },
     {
         "id":  "wine_17",
@@ -703,9 +719,9 @@
         "priceRange":  "2500以上",
         "country":  "匈牙利",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -730,7 +746,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:32 PM"
     },
     {
         "id":  "wine_18",
@@ -775,7 +792,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:36 PM"
     },
     {
         "id":  "wine_19",
@@ -790,9 +808,9 @@
         "priceRange":  "1000以下",
         "country":  "法國",
         "region":  "勃艮第",
-        "grapes": [
-            "夏多內（Chardonnay）"
-        ],
+        "grapes":  [
+                       "夏多內（Chardonnay）"
+                   ],
         "sweetness":  "乾型",
         "acidity":  "",
         "tannin":  "",
@@ -816,7 +834,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 1, 2025 10:36 PM"
     },
     {
         "id":  "wine_20",
@@ -831,9 +850,9 @@
         "priceRange":  "1000以下",
         "country":  "紐西蘭",
         "region":  "",
-        "grapes": [
-            "白蘇維濃（Sauvignon Blanc）"
-        ],
+        "grapes":  [
+                       "白蘇維濃（Sauvignon Blanc）"
+                   ],
         "sweetness":  "乾型",
         "acidity":  "",
         "tannin":  "",
@@ -857,7 +876,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 7, 2025 2:30 PM"
     },
     {
         "id":  "wine_21",
@@ -872,16 +892,16 @@
         "priceRange":  "1000以下",
         "country":  "阿根廷",
         "region":  "",
-        "grapes": [
-            "馬爾貝克（Malbec）"
-        ],
+        "grapes":  [
+                       "馬爾貝克（Malbec）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "飽滿",
-        "flavors": [
-            "黑色水果"
-        ],
+        "flavors":  [
+                        "黑色水果"
+                    ],
         "rawTags":  [
                         "柔和單寧",
                         "順口",
@@ -898,7 +918,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 10, 2025 10:41 PM"
     },
     {
         "id":  "wine_22",
@@ -941,7 +962,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 10, 2025 10:44 PM"
     },
     {
         "id":  "wine_23",
@@ -984,7 +1006,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 28, 2025 3:41 PM"
     },
     {
         "id":  "wine_24",
@@ -999,9 +1022,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "慕斯卡（Moscato Bianco）"
-        ],
+        "grapes":  [
+                       "慕斯卡（Moscato Bianco）"
+                   ],
         "sweetness":  "微甜",
         "acidity":  "",
         "tannin":  "",
@@ -1027,7 +1050,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "September 28, 2025 3:45 PM"
     },
     {
         "id":  "wine_25",
@@ -1042,9 +1066,9 @@
         "priceRange":  "1000以下",
         "country":  "葡萄牙",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -1070,7 +1094,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 5, 2025 2:51 PM"
     },
     {
         "id":  "wine_26",
@@ -1085,9 +1110,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "麝香葡萄（Moscato bianco）"
-        ],
+        "grapes":  [
+                       "麝香葡萄（Moscato bianco）"
+                   ],
         "sweetness":  "微甜",
         "acidity":  "",
         "tannin":  "",
@@ -1113,7 +1138,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 5, 2025 2:54 PM"
     },
     {
         "id":  "wine_27",
@@ -1158,7 +1184,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 5, 2025 2:56 PM"
     },
     {
         "id":  "wine_28",
@@ -1173,9 +1200,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1199,7 +1226,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 5, 2025 2:59 PM"
     },
     {
         "id":  "wine_29",
@@ -1214,9 +1242,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "麝香葡萄（Moscato bianco）"
-        ],
+        "grapes":  [
+                       "麝香葡萄（Moscato bianco）"
+                   ],
         "sweetness":  "微甜",
         "acidity":  "",
         "tannin":  "",
@@ -1242,7 +1270,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 10, 2025 2:45 PM"
     },
     {
         "id":  "wine_30",
@@ -1285,7 +1314,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 10, 2025 2:50 PM"
     },
     {
         "id":  "wine_31",
@@ -1300,9 +1330,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "麝香葡萄（Moscato bianco）"
-        ],
+        "grapes":  [
+                       "麝香葡萄（Moscato bianco）"
+                   ],
         "sweetness":  "微甜",
         "acidity":  "",
         "tannin":  "",
@@ -1328,7 +1358,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 10, 2025 8:56 PM"
     },
     {
         "id":  "wine_32",
@@ -1343,9 +1374,9 @@
         "priceRange":  "1000以下",
         "country":  "智利",
         "region":  "",
-        "grapes": [
-            "希哈（Syrah）"
-        ],
+        "grapes":  [
+                       "希哈（Syrah）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1369,7 +1400,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 26, 2025 11:00 PM"
     },
     {
         "id":  "wine_33",
@@ -1384,16 +1416,16 @@
         "priceRange":  "1000以下",
         "country":  "西班牙",
         "region":  "",
-        "grapes": [
-            "格那希（Garnacha）"
-        ],
+        "grapes":  [
+                       "格那希（Garnacha）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "中等",
-        "flavors": [
-            "紅色水果"
-        ],
+        "flavors":  [
+                        "紅色水果"
+                    ],
         "rawTags":  [
                         "柔和單寧",
                         "紅色水果",
@@ -1410,7 +1442,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 26, 2025 11:05 PM"
     },
     {
         "id":  "wine_34",
@@ -1425,9 +1458,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "金芬黛（Zinfandel）"
-        ],
+        "grapes":  [
+                       "金芬黛（Zinfandel）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1454,7 +1487,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 26, 2025 11:07 PM"
     },
     {
         "id":  "wine_35",
@@ -1469,9 +1503,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "混釀"
-        ],
+        "grapes":  [
+                       "混釀"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1497,7 +1531,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 26, 2025 11:09 PM"
     },
     {
         "id":  "wine_36",
@@ -1512,16 +1547,16 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "巴貝拉（Barbera）"
-        ],
+        "grapes":  [
+                       "巴貝拉（Barbera）"
+                   ],
         "sweetness":  "",
         "acidity":  "高",
         "tannin":  "",
         "body":  "中等",
-        "flavors": [
-            "紅色水果"
-        ],
+        "flavors":  [
+                        "紅色水果"
+                    ],
         "rawTags":  [
                         "柔順",
                         "紅色水果",
@@ -1538,7 +1573,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "October 26, 2025 11:13 PM"
     },
     {
         "id":  "wine_37",
@@ -1553,9 +1589,9 @@
         "priceRange":  "2500以上",
         "country":  "美國",
         "region":  "",
-        "grapes": [
-            "卡本內蘇維濃（Cabernet Sauvignon）"
-        ],
+        "grapes":  [
+                       "卡本內蘇維濃（Cabernet Sauvignon）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1581,7 +1617,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 5:55 PM"
     },
     {
         "id":  "wine_38",
@@ -1596,9 +1633,9 @@
         "priceRange":  "1000以下",
         "country":  "紐西蘭",
         "region":  "",
-        "grapes": [
-            "白蘇維濃（Sauvignon Blanc）"
-        ],
+        "grapes":  [
+                       "白蘇維濃（Sauvignon Blanc）"
+                   ],
         "sweetness":  "乾型",
         "acidity":  "",
         "tannin":  "",
@@ -1627,7 +1664,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 6:04 PM"
     },
     {
         "id":  "wine_39",
@@ -1642,9 +1680,9 @@
         "priceRange":  "1000以下",
         "country":  "澳洲",
         "region":  "",
-        "grapes": [
-            "希拉茲（Shiraz）"
-        ],
+        "grapes":  [
+                       "希拉茲（Shiraz）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1672,7 +1710,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:25 PM"
     },
     {
         "id":  "wine_40",
@@ -1687,9 +1726,9 @@
         "priceRange":  "2500以上",
         "country":  "澳洲",
         "region":  "",
-        "grapes": [
-            "希拉茲（Shiraz）"
-        ],
+        "grapes":  [
+                       "希拉茲（Shiraz）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1716,7 +1755,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:34 PM"
     },
     {
         "id":  "wine_41",
@@ -1731,9 +1771,9 @@
         "priceRange":  "2500以上",
         "country":  "阿根廷",
         "region":  "",
-        "grapes": [
-            "馬爾貝克（Malbec）"
-        ],
+        "grapes":  [
+                       "馬爾貝克（Malbec）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1760,7 +1800,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:38 PM"
     },
     {
         "id":  "wine_42",
@@ -1775,9 +1816,9 @@
         "priceRange":  "1000–2500",
         "country":  "智利",
         "region":  "",
-        "grapes": [
-            "卡美內（Carmenere）"
-        ],
+        "grapes":  [
+                       "卡美內（Carmenere）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1804,7 +1845,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:42 PM"
     },
     {
         "id":  "wine_43",
@@ -1819,16 +1861,16 @@
         "priceRange":  "1000以下",
         "country":  "台灣",
         "region":  "",
-        "grapes": [
-            "黑后葡萄（Black Queen）"
-        ],
+        "grapes":  [
+                       "黑后葡萄（Black Queen）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "飽滿",
-        "flavors": [
-            "果香"
-        ],
+        "flavors":  [
+                        "果香"
+                    ],
         "rawTags":  [
                         "在地",
                         "果香",
@@ -1845,7 +1887,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:49 PM"
     },
     {
         "id":  "wine_44",
@@ -1860,9 +1903,9 @@
         "priceRange":  "1000以下",
         "country":  "台灣",
         "region":  "",
-        "grapes": [
-            "金香葡萄(Golden muscat)"
-        ],
+        "grapes":  [
+                       "金香葡萄(Golden muscat)"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1889,7 +1932,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:51 PM"
     },
     {
         "id":  "wine_45",
@@ -1904,9 +1948,9 @@
         "priceRange":  "1000–2500",
         "country":  "法國",
         "region":  "",
-        "grapes": [
-            "卡美（Gamay）"
-        ],
+        "grapes":  [
+                       "卡美（Gamay）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -1933,7 +1977,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 8:58 PM"
     },
     {
         "id":  "wine_46",
@@ -1948,16 +1993,16 @@
         "priceRange":  "1000以下",
         "country":  "德國",
         "region":  "",
-        "grapes": [
-            "黑皮諾（Pinot Noir）"
-        ],
+        "grapes":  [
+                       "黑皮諾（Pinot Noir）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
         "body":  "",
-        "flavors": [
-            "果香"
-        ],
+        "flavors":  [
+                        "果香"
+                    ],
         "rawTags":  [
                         "優雅",
                         "果香",
@@ -1973,7 +2018,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:00 PM"
     },
     {
         "id":  "wine_47",
@@ -2018,7 +2064,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:07 PM"
     },
     {
         "id":  "wine_48",
@@ -2033,9 +2080,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "麝香葡萄（Moscato bianco）"
-        ],
+        "grapes":  [
+                       "麝香葡萄（Moscato bianco）"
+                   ],
         "sweetness":  "甜型",
         "acidity":  "",
         "tannin":  "",
@@ -2063,7 +2110,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:11 PM"
     },
     {
         "id":  "wine_49",
@@ -2078,9 +2126,9 @@
         "priceRange":  "1000以下",
         "country":  "義大利",
         "region":  "",
-        "grapes": [
-            "葛雷拉（Glera）"
-        ],
+        "grapes":  [
+                       "葛雷拉（Glera）"
+                   ],
         "sweetness":  "",
         "acidity":  "",
         "tannin":  "",
@@ -2106,7 +2154,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:15 PM"
     },
     {
         "id":  "wine_50",
@@ -2150,7 +2199,8 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:21 PM"
     },
     {
         "id":  "wine_51",
@@ -2194,6 +2244,7 @@
         "occasion":  "",
         "decantMinutes":  "",
         "remark":  "",
-        "reviewer":  "浩子/我"
+        "reviewer":  "浩子/我",
+        "changedAt":  "November 2, 2025 9:23 PM"
     }
 ];
